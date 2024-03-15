@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  django:
+    build: .
+    volumes:
+      - .:/app
+      - static_data:/app/static
+    ports:
+      - "8000:8000"
+
+volumes:
+  static_data:  # Optional volume to persist data
