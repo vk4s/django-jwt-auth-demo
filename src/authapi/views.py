@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -6,6 +6,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
+
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from authapi.serializers import UserSerializer, LoginSerializer
 
@@ -18,8 +20,11 @@ class UserCreateAPIView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             if user:
-                token = Token.objects.create(user=user)
-                return Response({'token': token.key}, status=status.HTTP_201_CREATED)
+                refresh = RefreshToken.for_user(user)
+                return Response({
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginAPIView(APIView):
@@ -46,7 +51,25 @@ class LogoutAPIView(APIView):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def verify_token(request):
-    return Response({'message': 'Token is valid'})
+    token = request.headers.get('Authorization').split(' ')[1]
+    payload = {}
+    try:
+        # Token is valid and user it logged in.
+        access_token = AccessToken(token)
+        user_id = access_token.payload['user_id']
+        user = get_user_model().objects.get(id=user_id)
+
+        payload = {}
+        payload['id'] = user.id
+        payload['username'] = user.username
+        payload['email'] = user.email
+        payload['is_staff'] = user.is_staff
+        payload['message'] = 'Token is valid'
+    except Exception as e:
+        payload = {}
+        payload['message'] = str(e)
+        return Response(payload, status=status.HTTP_400_BAD_REQUEST)
+    return Response(payload, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
