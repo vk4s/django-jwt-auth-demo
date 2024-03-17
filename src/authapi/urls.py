@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 from authapi.views import (
-    UserCreateAPIView, LoginAPIView, LogoutAPIView,
+    UserCreateAPIView, LoginAPIView,
     verify_token, check_login_status, logout
 )
 
