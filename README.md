@@ -51,6 +51,8 @@ python src/manage.py collectstatic --noinput
 python src/manage.py runserver 0.0.0.0:8000 --insecure
 ```
 
+# ⚠ NOTE about production
+The app uses hardcoded `SECRET_KEY`, `ALLOWED_HOSTS` and `DEBUG`. It can be improved by using some environment management package like [django-dotenv](https://github.com/jpadilla/django-dotenv)
 
 # API Testing Commands
 
