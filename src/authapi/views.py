@@ -43,10 +43,19 @@ class LoginAPIView(APIView):
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class LogoutAPIView(APIView):
-    def post(self, request):
-        request.user.auth_token.delete()
-        return Response(status=status.HTTP_200_OK)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout(request):
+    response = Response(status=status.HTTP_200_OK)
+    # Assuming the client is responsible for deleting the token,
+    # we can simply clear the token cookie (if using cookies) or
+    # send a response to instruct the client to delete the token.
+    response.delete_cookie('token')
+    # if we use DRF's Stateful Tokens and not Stateless JWT
+    # 👇 this line would delete the token from the database
+    # request.user.auth_token.delete()
+
+    return response
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
