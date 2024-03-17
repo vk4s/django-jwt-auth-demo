@@ -1,19 +1,56 @@
 # Django Restframework demo with JWT Authentication
-An application to demostrate JWT based api authentican in rest apis.
+An application to demostrate JWT based authentication for rest apis.
+
 ---
+
+# Requirements
+- Python >= 3.11
+- Database: Sqlite3
 
 # Testing
 There are unittests for the apis.
-Run the following command to test the API
+Run the following command to test the application
 ```sh
 python src/manage.py test
 ```
 
 # Run
+
+### 1. Docker compose
+```sh
+docker compose up -d
+```
+
+### 2. Docker Hub
+Directly run from Dockerhub
+```sh
+docker run noxcoder99/django-jwt-demo:1.0.0 -p 8000:8000
+```
+Then access: [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
+
+
+### 3. Locally
 | _--insecure_ to allow automated handeling static assets. (Not to be used outside localhost)
+```sh
+pip install -r requirements.txt
+```
+
+```sh
+python src/manage.py makemigrations && python src/manage.py migrate
+```
+
+```sh
+python src/manage.py createsuperuser
+```
+
+```sh
+python src/manage.py collectstatic --noinput
+```
+
 ```sh
 python src/manage.py runserver 0.0.0.0:8000 --insecure
 ```
+
 
 # API Testing Commands
 
@@ -72,5 +109,18 @@ curl --request POST \
 }'
 ```
 
+
+
+
+# Docker commands
+
+## Build and tag the image
+```sh
+docker build --tag django-jwt-demo:1.0.0 .
+```
+
+```sh
+docker tag django-jwt-demo:1.0.0 django-jwt-demo:latest
+```
 
 
